@@ -1,14 +1,17 @@
 import json
 from typing import List, AsyncGenerator
-from fastapi import APIRouter, Depends, Request, HTTPException, status
+from fastapi import APIRouter, Depends, Request, HTTPException, status, UploadFile, File
 from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
+
+from app.core.config import settings
 
 from app.db.database import get_db
 from app.api.deps import get_current_user
 from app.models.user import User as UserModel
 from app.models.chat import ChatSession, ChatMessage
 from app.schemas.chat import ChatRequest, ChatSessionResponse, ChatSessionListResponse
+from app.core.storage import storage
 
 # Note: Keeping your chosen Agent logic from agno
 from agno.agent import Agent
@@ -59,20 +62,26 @@ async def agent_sse_stream(
     db: Session,
     chat_id: int,
     message: str,
+    file_urls: List[str],
     user_name: str
 ) -> AsyncGenerator[dict, None]:
     """
     Streams the SSE response while persisting user and AI messages faithfully into exactly matching DB columns.
     """
     # 1. Immediate DB Persistence - Save user prompt to exact chat session
-    user_msg = ChatMessage(session_id=chat_id, role="user", content=message)
+    user_msg = ChatMessage(session_id=chat_id, role="user", content=message, file_urls=file_urls)
     db.add(user_msg)
     db.commit()
 
     accumulated_content = ""
     
+    # Pre-process message for the AI: if files exist, let the AI know
+    prompt = f"User {user_name} says: {message}"
+    if file_urls:
+        prompt += f"\n[The user has attached the following files: {', '.join(file_urls)}]"
+
     # 2. Iterate dynamically as the AI generates tokens natively
-    async for event in agent.arun(f"User {user_name} says: {message}", stream=True):
+    async for event in agent.arun(prompt, stream=True):
         if await request.is_disconnected():
             break
         if getattr(event, "content", None):
@@ -117,7 +126,30 @@ async def chat_stream(
             db=db,
             chat_id=chat.id,
             message=chat_in.message,
+            file_urls=chat_in.file_urls,
             user_name=current_user.full_name or current_user.email
         ),
         ping=15
     )
+
+@router.post("/batch_upload", summary="Bulk Upload Multiple Files (Returns URLs to include in ChatRequest)")
+def batch_upload_files(
+    files: List[UploadFile] = File(...),
+    current_user: UserModel = Depends(get_current_user)
+):
+    """
+    Handles robust multi-file uploads. Use this endpoint BEFORE sending the stream request.
+    It returns a list of URLs that the frontend can attach inside `ChatRequest.file_urls`.
+    """
+    uploaded_urls = []
+    
+    for file in files:
+        # The StorageManager automatically checks .env (STORAGE_PROVIDER) to decide if local or S3 boto3 
+        final_file_url = storage.save_file(file)
+        uploaded_urls.append(final_file_url)
+
+    return {
+        "status": "success", 
+        "file_urls": uploaded_urls,
+        "message": f"Successfully uploaded {len(files)} files to {settings.STORAGE_PROVIDER}"
+    }
