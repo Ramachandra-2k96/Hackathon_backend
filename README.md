@@ -1,6 +1,6 @@
-# FastAPI Auth API
+# FastAPI Auth & AI Chat API
 
-A production-ready, scalable REST API built with **FastAPI**, **SQLAlchemy**, and **Alembic**, utilizing **uv** for lightning-fast package management. This project implements secure user authentication (Signup, Login, and protected user data retrieval) using JWT tokens and bcrypt password hashing.
+A production-ready, scalable REST API built with **FastAPI**, **SQLAlchemy**, and **Alembic**, utilizing **uv** for lightning-fast package management. This project implements secure user authentication (via JWT tokens) and a fully persistent AI Chatbot (via Server-Sent Events / SSE) complete with chat session management and message history using the **Agno** AI agent framework.
 
 ## Features
 
@@ -8,8 +8,9 @@ A production-ready, scalable REST API built with **FastAPI**, **SQLAlchemy**, an
 - **SQLAlchemy (ORM)**: Clean database interactions and modeling.
 - **Alembic**: Robust database migration management.
 - **Bcrypt & PyJWT**: Secure password hashing and token-based authentication.
-- **Pydantic Settings**: Environment configuration validation via `.env`.
-- **SQLite**: Default relational database (easily swappable to PostgreSQL or others).
+- **SSE Streaming (sse-starlette)**: Real-time, word-by-word streaming of AI responses.
+- **Agno Agent**: Agentic LLM integration (OpenAI-compatible) generating seamless conversational AI.
+- **Chat Persistence**: Full history tracking with nested "Chat Sessions" and "Messages", securely locked to individual users.
 
 ## Prerequisites
 
@@ -23,6 +24,7 @@ A production-ready, scalable REST API built with **FastAPI**, **SQLAlchemy**, an
 │   ├── api/
 │   │   ├── endpoints/
 │   │   │   ├── auth.py     # Auth routes (Signup, Login, Me)
+│   │   │   └── chat.py     # AI Chat routes & SSE Streaming logic
 │   │   ├── deps.py         # Dependencies (like get_current_user)
 │   ├── core/
 │   │   ├── config.py       # Pydantic Settings base
@@ -30,9 +32,11 @@ A production-ready, scalable REST API built with **FastAPI**, **SQLAlchemy**, an
 │   ├── db/
 │   │   └── database.py     # SQLAlchemy Engine & Session
 │   ├── models/
-│   │   └── user.py         # User DB Schema
+│   │   ├── user.py         # User DB Schema
+│   │   └── chat.py         # ChatSession and ChatMessage Schemas
 │   ├── schemas/
-│   │   └── user.py         # Pydantic Schemas for validation
+│   │   ├── user.py         # Pydantic Models for user validation
+│   │   └── chat.py         # Pydantic Models for chat validation
 │   └── main.py             # FastAPI App Entrypoint
 ├── alembic/                # DB Migrations folder
 ├── .env                    # Environment variables
@@ -50,11 +54,12 @@ cd backend
 **2. Configure your environment**
 Ensure your `.env` file is populated securely. An example of `.env`:
 ```env
-PROJECT_NAME="Auth API"
+PROJECT_NAME="Auth & AI Chat API"
 SECRET_KEY="your-super-secret-key-change-me"
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 SQLALCHEMY_DATABASE_URI="sqlite:///./app.db"
+# Note: You must also configure your Agno agent's API keys directly inside chat.py or link them here!
 ```
 
 **3. Install Dependencies with `uv`**
@@ -104,6 +109,13 @@ FastAPI natively supports auto-generated, interactive API documentation. While t
 
 ## Endpoints
 
+### Authentication
 - `POST /api/v1/auth/signup`: Create a new user with `email`, `password`, and `full_name`.
 - `POST /api/v1/auth/login`: Authenticate and receive a JWT Bearer `access_token`.
 - `GET /api/v1/auth/me`: Retrieve current logged-in user securely (requires `Authorization: Bearer <token>`).
+
+### Chat & Streaming (Requires Authorization Token)
+- `POST /api/v1/chat/`: Create a new, empty chat session (Returns `chat_id`).
+- `GET /api/v1/chat/`: List all past chat sessions for the authenticated user (Dashboard sidebar feature).
+- `GET /api/v1/chat/{chat_id}`: Load the full history of messages for a specific chat.
+- `POST /api/v1/chat/{chat_id}/stream`: Real-time Server-Sent Events (SSE) AI response stream. Automatically saves both the user's prompt and the AI's generated response to the database upon completion.
