@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy.orm import relationship
 from app.db.database import Base
 
 class User(Base):
@@ -9,3 +10,5 @@ class User(Base):
     full_name = Column(String, nullable=True)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
+
+    chats = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
