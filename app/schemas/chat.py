@@ -5,6 +5,7 @@ from datetime import datetime
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, description="The message sent by the user to the AI chatbot")
     file_urls: Optional[List[str]] = Field(default=[], description="List of previously uploaded file URLs to attach to this message")
+    project_id: Optional[int] = Field(default=None, description="Optional project id to answer from project documentation")
 
 class ChatResponseChunk(BaseModel):
     chunk: str = Field(..., description="A chunk of text from the AI streaming response")
