@@ -1,5 +1,6 @@
 import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Auth API"
@@ -15,6 +16,15 @@ class Settings(BaseSettings):
     AWS_SECRET_ACCESS_KEY: str = ""
     AWS_REGION: str = "us-east-1"
     AWS_ENDPOINT_URL: str = ""  # Useful for localstack / custom GCP emulators
+
+    # Email Settings (Brevo)
+    BREVO_API_KEY: Optional[str] = None
+    BREVO_API_EMAIL: Optional[str] = None
+
+    # Twilio SMS Settings
+    TWILIO_ACCOUNT_SID: Optional[str] = None
+    TWILIO_AUTH_TOKEN: Optional[str] = None
+    TWILIO_FROM_NUMBER: Optional[str] = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=True)
 

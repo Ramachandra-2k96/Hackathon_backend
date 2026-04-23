@@ -12,6 +12,8 @@ A production-ready, scalable REST API built with **FastAPI**, **SQLAlchemy**, an
 - **Agno Agent**: Agentic LLM integration generating seamless conversational AI.
 - **Chat Persistence**: Full history tracking with nested "Chat Sessions", "Messages", and attached files securely locked to individual users.
 - **Unified Storage Engine**: Seamlessly switch between Local File Storage and Cloud S3 (AWS, GCP, Localstack) using `boto3`.
+- **Transactional Emails Engine**: Send fully customizable HTML emails natively via the Brevo API integration.
+- **SMS Integration**: Trigger real-time, global SMS texts natively via the Twilio SDK.
 
 ## Prerequisites
 
@@ -30,7 +32,9 @@ A production-ready, scalable REST API built with **FastAPI**, **SQLAlchemy**, an
 │   ├── core/
 │   │   ├── config.py       # Pydantic Settings base
 │   │   ├── security.py     # JWT & Hashing logic
-│   │   └── storage.py      # Local disk / S3 bucket upload manager
+│   │   ├── storage.py      # Local disk / S3 bucket upload manager
+│   │   ├── email.py        # Brevo Email sender logic
+│   │   └── sms.py          # Twilio SMS sender logic
 │   ├── db/
 │   │   └── database.py     # SQLAlchemy Engine & Session
 │   ├── models/
@@ -69,6 +73,15 @@ AWS_ACCESS_KEY_ID="xxx"
 AWS_SECRET_ACCESS_KEY="xxx"
 AWS_REGION="us-east-1"
 # AWS_ENDPOINT_URL="http://localhost:4566" # Optional: for Docker/Localstack GCP/AWS emulation
+
+# Brevo (Sendinblue) Email Service
+BREVO_API_KEY="your-brevo-api-key"
+BREVO_API_EMAIL="noreply@medassist.com"
+
+# Twilio (SMS provider)
+TWILIO_ACCOUNT_SID="your-twilio-account-sid"
+TWILIO_AUTH_TOKEN="your-twilio-auth-token"
+TWILIO_FROM_NUMBER="your-twilio-phone-number"
 ```
 
 **3. Install Dependencies with `uv`**
