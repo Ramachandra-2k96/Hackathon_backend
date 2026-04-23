@@ -12,3 +12,4 @@ class User(Base):
     is_active = Column(Boolean, default=True)
 
     chats = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
+    projects = relationship("Project", back_populates="user", cascade="all, delete-orphan")

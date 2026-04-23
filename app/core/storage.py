@@ -55,5 +55,32 @@ class StorageManager:
             # Return uniform local path (Assuming FastAPI mounts /uploads to serve statics)
             return f"/uploads/{safe_filename}"
 
+    def save_bytes(self, content: bytes, extension: str = "zip", content_type: str = "application/zip") -> str:
+        """
+        Saves raw bytes either to Local Disk or S3 and returns the final URL/path.
+        Useful for server-side generated/downloaded files that do not arrive as UploadFile.
+        """
+        ext = extension.strip(".") if extension else ""
+        safe_filename = f"{uuid.uuid4().hex}.{ext}" if ext else f"{uuid.uuid4().hex}"
+
+        if self.provider == "s3":
+            from io import BytesIO
+
+            self.s3.upload_fileobj(
+                BytesIO(content),
+                self.bucket,
+                safe_filename,
+                ExtraArgs={"ContentType": content_type}
+            )
+
+            if settings.AWS_ENDPOINT_URL:
+                return f"{settings.AWS_ENDPOINT_URL}/{self.bucket}/{safe_filename}"
+            return f"https://{self.bucket}.s3.{settings.AWS_REGION}.amazonaws.com/{safe_filename}"
+
+        file_path = os.path.join(self.upload_dir, safe_filename)
+        with open(file_path, "wb") as buffer:
+            buffer.write(content)
+        return f"/uploads/{safe_filename}"
+
 # Create a singleton instance to be used across the app
 storage = StorageManager()
