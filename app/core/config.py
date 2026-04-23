@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     TWILIO_AUTH_TOKEN: Optional[str] = None
     TWILIO_FROM_NUMBER: Optional[str] = None
 
+    # OpenAI Settings
+    OPENAI_API_KEY: Optional[str] = None
+    OPENAI_MODEL_ID: str = "gpt-4o-mini"
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=True)
 
 settings = Settings()

@@ -15,16 +15,15 @@ from app.core.storage import storage
 
 # Note: Keeping your chosen Agent logic from agno
 from agno.agent import Agent
-from agno.models.openai.like import OpenAILike
+from agno.models.openai import OpenAI
 
 router = APIRouter()
 
 # Global agent initialization just as you configured it
 agent = Agent(
-    model=OpenAILike(
-        id="your-model-id",
-        api_key="YOUR_API_KEY",
-        base_url="https://your-provider.com/v1",
+    model=OpenAI(
+        id=settings.OPENAI_MODEL_ID,
+        api_key=settings.OPENAI_API_KEY,
     ),
     markdown=True,
 )
