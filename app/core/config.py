@@ -28,7 +28,9 @@ class Settings(BaseSettings):
 
     # OpenAI Settings
     OPENAI_API_KEY: Optional[str] = None
+    OPENAI_BASE_URL: str = "https://genailab.tcs.in/v1"
     OPENAI_MODEL_ID: str = "gpt-4o-mini"
+    OPENAI_VERIFY_SSL: bool = False
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", case_sensitive=True)
 

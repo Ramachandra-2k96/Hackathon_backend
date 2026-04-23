@@ -82,6 +82,12 @@ BREVO_API_EMAIL="noreply@medassist.com"
 TWILIO_ACCOUNT_SID="your-twilio-account-sid"
 TWILIO_AUTH_TOKEN="your-twilio-auth-token"
 TWILIO_FROM_NUMBER="your-twilio-phone-number"
+
+# OpenAI-compatible LLM endpoint (used by Graph RAG)
+OPENAI_BASE_URL="https://genailab.tcs.in/v1"
+OPENAI_API_KEY="paste-your-custom-key-here"
+OPENAI_MODEL_ID="gpt-4o-mini"
+OPENAI_VERIFY_SSL=false
 ```
 
 **3. Install Dependencies with `uv`**
@@ -146,3 +152,6 @@ To implement a ChatGPT-like file attachment flow in your frontend API client, fo
 - `GET /api/v1/chat/{chat_id}`: Load full message history (includes `file_urls` array on messages).
 - `POST /api/v1/chat/batch_upload`: Accepts multiple files, uploads them, and returns an array of public URLs.
 - `POST /api/v1/chat/{chat_id}/stream`: Real-time SSE streaming endpoint. Expects `message` and optionally `file_urls`.
+
+
+I was integrating a hybrid approach to use both graph rag + normal rag to better answer user queries. Can you check if it's set up correctly? And if so, hook it up to the chat endpoints so that when we query in a project, it uses the documentations that are present in the provided project code

@@ -10,6 +10,7 @@ from app.core.storage import storage
 from app.db.database import get_db
 from app.models.project import Project, ProjectChat, ProjectChatMessage
 from app.models.user import User as UserModel
+from app.services.graph_rag import graph_rag_service
 from app.schemas.project import (
     PreprocessResponse,
     ProjectChatCreate,
@@ -230,11 +231,29 @@ def preprocess_project_docs(
     current_user: UserModel = Depends(get_current_user),
 ):
     project = _get_owned_project(db, project_id, current_user.id)
-    return PreprocessResponse(
-        project_id=project.id,
-        status="queued",
-        detail="Dummy preprocessing endpoint currently does nothing.",
-    )
+    try:
+        project.docs_index_status = "indexing"
+        project.docs_index_error = None
+        db.add(project)
+        db.commit()
+        db.refresh(project)
+
+        nodes_count, relations_count, communities_count = graph_rag_service.build_index(db, project)
+        return PreprocessResponse(
+            project_id=project.id,
+            status="ready",
+            detail="Project documentation graph index created successfully.",
+            nodes_count=nodes_count,
+            relations_count=relations_count,
+            communities_count=communities_count,
+        )
+    except Exception as exc:  # noqa: BLE001
+        db.rollback()
+        project.docs_index_status = "failed"
+        project.docs_index_error = str(exc)
+        db.add(project)
+        db.commit()
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Preprocessing failed: {exc}") from exc
 
 
 @router.post("/{project_id}/chats", response_model=ProjectChatResponse, status_code=status.HTTP_201_CREATED)
@@ -294,12 +313,41 @@ def send_dummy_project_chat_message(
     current_user: UserModel = Depends(get_current_user),
 ):
     chat = _get_owned_chat(db, project_id, chat_id, current_user.id)
+    project = _get_owned_project(db, project_id, current_user.id)
 
     user_message = ProjectChatMessage(chat_id=chat.id, role="user", content=payload.message)
     db.add(user_message)
     db.flush()
 
-    dummy_reply_text = f"[dummy] Received your message for project chat {chat.id}: {payload.message}"
+    if project.docs_index_status != "ready":
+        if not project.zip_file_url:
+            dummy_reply_text = (
+                "I cannot answer from documentation yet because this project has no source ZIP attached. "
+                "Upload a ZIP or GitHub URL, preprocess the project, then ask again."
+            )
+        else:
+            try:
+                project.docs_index_status = "indexing"
+                project.docs_index_error = None
+                db.add(project)
+                db.commit()
+                db.refresh(project)
+                graph_rag_service.build_index(db, project)
+            except Exception as exc:  # noqa: BLE001
+                db.rollback()
+                project.docs_index_status = "failed"
+                project.docs_index_error = str(exc)
+                db.add(project)
+                db.commit()
+                dummy_reply_text = (
+                    "I tried to build the project documentation graph but it failed. "
+                    f"Reason: {exc}"
+                )
+            else:
+                dummy_reply_text = graph_rag_service.answer_query(db, project, payload.message)
+    else:
+        dummy_reply_text = graph_rag_service.answer_query(db, project, payload.message)
+
     assistant_message = ProjectChatMessage(chat_id=chat.id, role="assistant", content=dummy_reply_text)
     db.add(assistant_message)
 

@@ -1,6 +1,7 @@
 import shutil
 import uuid
 import os
+from urllib.request import Request, urlopen
 from fastapi import UploadFile
 from app.core.config import settings
 
@@ -81,6 +82,22 @@ class StorageManager:
         with open(file_path, "wb") as buffer:
             buffer.write(content)
         return f"/uploads/{safe_filename}"
+
+    def read_bytes(self, file_url: str) -> bytes:
+        """
+        Reads file bytes from local uploads path or remote URL.
+        """
+        if not file_url:
+            raise ValueError("file_url is required")
+
+        if file_url.startswith("/uploads/"):
+            file_path = os.path.join(self.upload_dir, file_url.removeprefix("/uploads/"))
+            with open(file_path, "rb") as fp:
+                return fp.read()
+
+        request = Request(file_url, headers={"User-Agent": "hackathon-backend"})
+        with urlopen(request, timeout=60) as response:
+            return response.read()
 
 # Create a singleton instance to be used across the app
 storage = StorageManager()

@@ -1,0 +1,15 @@
+{
+  "project_id": 7,
+  "model_id": "azure/genailab-maas-gpt-4o-mini",
+  "base_url": "https://genailab.tcs.in/v1",
+  "artifacts_dir": "uploads\\graphrag_verification",
+  "step_counts": {
+    "documents": 3,
+    "chunks": 3,
+    "nodes": 9,
+    "relations": 8,
+    "communities": 2
+  },
+  "query": "How does the payment architecture connect gateway, risk, and charge execution?",
+  "answer_preview": "The payment architecture integrates the gateway, risk assessment, and charge execution through a structured flow. Initially, the **GatewayService** receives API requests and forwards them to the **PaymentOrchestrator**. The **PaymentOrchestrator** then interacts with the **RiskEngine** to evaluate potential risks. Concurrently, the **MerchantService** creates merchant profiles and initiates the KY"
+}

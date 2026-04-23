@@ -1,0 +1,139 @@
+{
+  "records": [
+    {
+      "doc_path": "docs/architecture.md",
+      "chunk_index": 0,
+      "raw_output": "entity_name: GatewayService  \nentity_type: Service  \nentity_description: Receives API requests and forwards them to PaymentOrchestrator.  \n\nentity_name: PaymentOrchestrator  \nentity_type: Service  \nentity_description: Calls RiskEngine before charging through StripeAdapter.  \n\nentity_name: RiskEngine  \nentity_type: Service  \nentity_description: Evaluates risk before processing payments.  \n\nentity_name: StripeAdapter  \nentity_type: Adapter  \nentity_description: Facilitates payment processing through Stripe.  \n\nsource_entity: GatewayService  \ntarget_entity: PaymentOrchestrator  \nrelation: forwards  \nrelationship_description: GatewayService receives API requests and forwards them to PaymentOrchestrator.  \n\nsource_entity: PaymentOrchestrator  \ntarget_entity: RiskEngine  \nrelation: calls  \nrelationship_description: PaymentOrchestrator calls RiskEngine before charging.  \n\nsource_entity: PaymentOrchestrator  \ntarget_entity: StripeAdapter  \nrelation: charges through  \nrelationship_description: PaymentOrchestrator charges through StripeAdapter after evaluating risk.  ",
+      "parsed_entities": [
+        {
+          "key": "gatewayservice",
+          "name": "GatewayService",
+          "entity_type": "Service",
+          "description": "Receives API requests and forwards them to PaymentOrchestrator."
+        },
+        {
+          "key": "paymentorchestrator",
+          "name": "PaymentOrchestrator",
+          "entity_type": "Service",
+          "description": "Calls RiskEngine before charging through StripeAdapter."
+        },
+        {
+          "key": "riskengine",
+          "name": "RiskEngine",
+          "entity_type": "Service",
+          "description": "Evaluates risk before processing payments."
+        },
+        {
+          "key": "stripeadapter",
+          "name": "StripeAdapter",
+          "entity_type": "Adapter",
+          "description": "Facilitates payment processing through Stripe."
+        }
+      ],
+      "parsed_relations": [
+        {
+          "source_key": "gatewayservice",
+          "target_key": "paymentorchestrator",
+          "relation": "forwards",
+          "description": "GatewayService receives API requests and forwards them to PaymentOrchestrator."
+        },
+        {
+          "source_key": "paymentorchestrator",
+          "target_key": "riskengine",
+          "relation": "calls",
+          "description": "PaymentOrchestrator calls RiskEngine before charging."
+        },
+        {
+          "source_key": "paymentorchestrator",
+          "target_key": "stripeadapter",
+          "relation": "charges through",
+          "description": "PaymentOrchestrator charges through StripeAdapter after evaluating risk."
+        }
+      ]
+    },
+    {
+      "doc_path": "docs/onboarding.md",
+      "chunk_index": 0,
+      "raw_output": "entity_name: MerchantService  \nentity_type: Service  \nentity_description: Creates merchant profiles and links them to KYCWorkflow.  \n\nentity_name: KYCWorkflow  \nentity_type: Workflow  \nentity_description: Uses DocumentVerifier and sends final status to MerchantService.  \n\nentity_name: DocumentVerifier  \nentity_type: Service  \nentity_description: Verifies documents as part of the KYC process.  \n\nsource_entity: MerchantService  \ntarget_entity: KYCWorkflow  \nrelation: links  \nrelationship_description: MerchantService creates merchant profiles and links them to KYCWorkflow.  \n\nsource_entity: KYCWorkflow  \ntarget_entity: DocumentVerifier  \nrelation: uses  \nrelationship_description: KYCWorkflow uses DocumentVerifier for document verification.  \n\nsource_entity: KYCWorkflow  \ntarget_entity: MerchantService  \nrelation: sends final status to  \nrelationship_description: KYCWorkflow sends the final status of the verification process to MerchantService.  ",
+      "parsed_entities": [
+        {
+          "key": "merchantservice",
+          "name": "MerchantService",
+          "entity_type": "Service",
+          "description": "Creates merchant profiles and links them to KYCWorkflow."
+        },
+        {
+          "key": "kycworkflow",
+          "name": "KYCWorkflow",
+          "entity_type": "Workflow",
+          "description": "Uses DocumentVerifier and sends final status to MerchantService."
+        },
+        {
+          "key": "documentverifier",
+          "name": "DocumentVerifier",
+          "entity_type": "Service",
+          "description": "Verifies documents as part of the KYC process."
+        }
+      ],
+      "parsed_relations": [
+        {
+          "source_key": "merchantservice",
+          "target_key": "kycworkflow",
+          "relation": "links",
+          "description": "MerchantService creates merchant profiles and links them to KYCWorkflow."
+        },
+        {
+          "source_key": "kycworkflow",
+          "target_key": "documentverifier",
+          "relation": "uses",
+          "description": "KYCWorkflow uses DocumentVerifier for document verification."
+        },
+        {
+          "source_key": "kycworkflow",
+          "target_key": "merchantservice",
+          "relation": "sends final status to",
+          "description": "KYCWorkflow sends the final status of the verification process to MerchantService."
+        }
+      ]
+    },
+    {
+      "doc_path": "docs/operations.md",
+      "chunk_index": 0,
+      "raw_output": "entity_name: AlertManager  \nentity_type: System  \nentity_description: Routes severe incidents to OnCallRunbook.  \n\nentity_name: OnCallRunbook  \nentity_type: System  \nentity_description: References GatewayService health checks and rollback actions.  \n\nentity_name: GatewayService  \nentity_type: Service  \nentity_description: Provides health checks and rollback actions referenced by OnCallRunbook.  \n\nsource_entity: AlertManager  \ntarget_entity: OnCallRunbook  \nrelation: routes  \nrelationship_description: Routes severe incidents to OnCallRunbook.  \n\nsource_entity: OnCallRunbook  \ntarget_entity: GatewayService  \nrelation: references  \nrelationship_description: References GatewayService health checks and rollback actions.  ",
+      "parsed_entities": [
+        {
+          "key": "alertmanager",
+          "name": "AlertManager",
+          "entity_type": "System",
+          "description": "Routes severe incidents to OnCallRunbook."
+        },
+        {
+          "key": "oncallrunbook",
+          "name": "OnCallRunbook",
+          "entity_type": "System",
+          "description": "References GatewayService health checks and rollback actions."
+        },
+        {
+          "key": "gatewayservice",
+          "name": "GatewayService",
+          "entity_type": "Service",
+          "description": "Provides health checks and rollback actions referenced by OnCallRunbook."
+        }
+      ],
+      "parsed_relations": [
+        {
+          "source_key": "alertmanager",
+          "target_key": "oncallrunbook",
+          "relation": "routes",
+          "description": "Routes severe incidents to OnCallRunbook."
+        },
+        {
+          "source_key": "oncallrunbook",
+          "target_key": "gatewayservice",
+          "relation": "references",
+          "description": "References GatewayService health checks and rollback actions."
+        }
+      ]
+    }
+  ]
+}

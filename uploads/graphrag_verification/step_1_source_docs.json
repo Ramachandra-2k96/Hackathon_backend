@@ -1,0 +1,19 @@
+{
+  "project_id": 7,
+  "zip_file_url": "/uploads/66c3298d40784f90b6c5fba127567cf7.zip",
+  "doc_count": 3,
+  "documents": [
+    {
+      "path": "docs/architecture.md",
+      "preview": "# Payment Platform Architecture\n\n`GatewayService` receives API requests and forwards to `PaymentOrchestrator`.\n`PaymentOrchestrator` calls `RiskEngine` before charging through `StripeAdapter`."
+    },
+    {
+      "path": "docs/onboarding.md",
+      "preview": "# Merchant Onboarding\n\n`MerchantService` creates merchant profiles and links them to `KYCWorkflow`.\n`KYCWorkflow` uses `DocumentVerifier` and sends final status to `MerchantService`."
+    },
+    {
+      "path": "docs/operations.md",
+      "preview": "# Incident Operations\n\n`AlertManager` routes severe incidents to `OnCallRunbook`.\n`OnCallRunbook` references `GatewayService` health checks and rollback actions."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "chunk_count": 3,
+  "chunks": [
+    {
+      "doc_path": "docs/architecture.md",
+      "chunk_index": 0,
+      "length": 192,
+      "text": "# Payment Platform Architecture\n\n`GatewayService` receives API requests and forwards to `PaymentOrchestrator`.\n`PaymentOrchestrator` calls `RiskEngine` before charging through `StripeAdapter`."
+    },
+    {
+      "doc_path": "docs/onboarding.md",
+      "chunk_index": 0,
+      "length": 182,
+      "text": "# Merchant Onboarding\n\n`MerchantService` creates merchant profiles and links them to `KYCWorkflow`.\n`KYCWorkflow` uses `DocumentVerifier` and sends final status to `MerchantService`."
+    },
+    {
+      "doc_path": "docs/operations.md",
+      "chunk_index": 0,
+      "length": 161,
+      "text": "# Incident Operations\n\n`AlertManager` routes severe incidents to `OnCallRunbook`.\n`OnCallRunbook` references `GatewayService` health checks and rollback actions."
+    }
+  ]
+}

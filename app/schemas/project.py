@@ -16,6 +16,12 @@ class ProjectResponse(BaseModel):
     source_type: Optional[str]
     repository_url: Optional[str]
     zip_file_url: Optional[str]
+    docs_index_status: str
+    docs_index_error: Optional[str]
+    docs_indexed_at: Optional[datetime]
+    docs_nodes_count: int
+    docs_relations_count: int
+    docs_communities_count: int
     created_at: datetime
     updated_at: Optional[datetime]
 
@@ -27,6 +33,9 @@ class PreprocessResponse(BaseModel):
     project_id: int
     status: str
     detail: str
+    nodes_count: int = 0
+    relations_count: int = 0
+    communities_count: int = 0
 
 
 class ProjectChatCreate(BaseModel):

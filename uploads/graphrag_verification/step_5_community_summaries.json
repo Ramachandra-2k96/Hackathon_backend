@@ -1,0 +1,12 @@
+{
+  "communities": [
+    {
+      "community_key": "community_0",
+      "summary": "The **GatewayService** acts as an intermediary that receives API requests and forwards them to the **PaymentOrchestrator**. The **PaymentOrchestrator** processes these requests by first calling the **RiskEngine** to assess potential risks before proceeding with payment transactions. Once the risk is evaluated, it charges through the **StripeAdapter**. Additionally, the **AlertManager** routes severe incidents to the **OnCallRunbook**, which contains references to the health checks and rollback actions for the **GatewayService**. This structure ensures a streamlined payment process while maintaining risk management and incident response protocols."
+    },
+    {
+      "community_key": "community_1",
+      "summary": "The key entities in this relationship are **MerchantService**, **KYCWorkflow**, and **DocumentVerifier**. The **MerchantService** is responsible for creating merchant profiles and linking them to the **KYCWorkflow**. The **KYCWorkflow** utilizes the **DocumentVerifier** to verify documents as part of the KYC process. After completing the verification, the **KYCWorkflow** sends the final status of the KYC process back to the **MerchantService**. This establishes a flow of information where the MerchantService initiates the process, KYCWorkflow manages verification, and communicates outcomes."
+    }
+  ]
+}

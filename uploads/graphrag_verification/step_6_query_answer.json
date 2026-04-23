@@ -1,0 +1,4 @@
+{
+  "query": "How does the payment architecture connect gateway, risk, and charge execution?",
+  "answer": "The payment architecture integrates the gateway, risk assessment, and charge execution through a structured flow. Initially, the **GatewayService** receives API requests and forwards them to the **PaymentOrchestrator**. The **PaymentOrchestrator** then interacts with the **RiskEngine** to evaluate potential risks. Concurrently, the **MerchantService** creates merchant profiles and initiates the KYC process, managed by the **KYCWorkflow** and the **DocumentVerifier** for document verification. Once verification is complete, the KYCWorkflow communicates the status back to the MerchantService, ensuring that risk assessment is seamlessly integrated into the payment process before executing the payment through the **StripeAdapter**. This architecture facilitates secure transactions by combining risk evaluation with charge execution."
+}

@@ -1,0 +1,113 @@
+{
+  "counts": {
+    "nodes": 9,
+    "relations": 8,
+    "communities": 2
+  },
+  "nodes": [
+    {
+      "node_key": "gatewayservice",
+      "name": "GatewayService",
+      "entity_type": "Service",
+      "description": "Receives API requests and forwards them to PaymentOrchestrator."
+    },
+    {
+      "node_key": "paymentorchestrator",
+      "name": "PaymentOrchestrator",
+      "entity_type": "Service",
+      "description": "Calls RiskEngine before processing payments through StripeAdapter."
+    },
+    {
+      "node_key": "riskengine",
+      "name": "RiskEngine",
+      "entity_type": "Service",
+      "description": "Evaluates risk before payment processing."
+    },
+    {
+      "node_key": "stripeadapter",
+      "name": "StripeAdapter",
+      "entity_type": "Service",
+      "description": "Handles payment processing through Stripe."
+    },
+    {
+      "node_key": "merchantservice",
+      "name": "MerchantService",
+      "entity_type": "Service",
+      "description": "Creates merchant profiles and links them to KYCWorkflow."
+    },
+    {
+      "node_key": "kycworkflow",
+      "name": "KYCWorkflow",
+      "entity_type": "Workflow",
+      "description": "Uses DocumentVerifier and sends final status to MerchantService."
+    },
+    {
+      "node_key": "documentverifier",
+      "name": "DocumentVerifier",
+      "entity_type": "Service",
+      "description": "Verifies documents as part of the KYC process."
+    },
+    {
+      "node_key": "alertmanager",
+      "name": "AlertManager",
+      "entity_type": "System",
+      "description": "Routes severe incidents to OnCallRunbook."
+    },
+    {
+      "node_key": "oncallrunbook",
+      "name": "OnCallRunbook",
+      "entity_type": "System",
+      "description": "References GatewayService health checks and rollback actions."
+    }
+  ],
+  "relations": [
+    {
+      "source_node_key": "gatewayservice",
+      "target_node_key": "paymentorchestrator",
+      "relation": "forwards",
+      "description": "GatewayService receives API requests and forwards them to PaymentOrchestrator."
+    },
+    {
+      "source_node_key": "paymentorchestrator",
+      "target_node_key": "riskengine",
+      "relation": "calls",
+      "description": "PaymentOrchestrator calls RiskEngine before processing payments."
+    },
+    {
+      "source_node_key": "paymentorchestrator",
+      "target_node_key": "stripeadapter",
+      "relation": "charges through",
+      "description": "PaymentOrchestrator charges through StripeAdapter after evaluating risk."
+    },
+    {
+      "source_node_key": "merchantservice",
+      "target_node_key": "kycworkflow",
+      "relation": "links to",
+      "description": "MerchantService creates merchant profiles and links them to KYCWorkflow."
+    },
+    {
+      "source_node_key": "kycworkflow",
+      "target_node_key": "documentverifier",
+      "relation": "uses",
+      "description": "KYCWorkflow uses DocumentVerifier for document verification."
+    },
+    {
+      "source_node_key": "kycworkflow",
+      "target_node_key": "merchantservice",
+      "relation": "sends final status to",
+      "description": "KYCWorkflow sends the final status of the KYC process to MerchantService."
+    },
+    {
+      "source_node_key": "alertmanager",
+      "target_node_key": "oncallrunbook",
+      "relation": "routes",
+      "description": "Routes severe incidents to OnCallRunbook."
+    },
+    {
+      "source_node_key": "oncallrunbook",
+      "target_node_key": "gatewayservice",
+      "relation": "references",
+      "description": "References GatewayService health checks and rollback actions."
+    }
+  ]
+}
